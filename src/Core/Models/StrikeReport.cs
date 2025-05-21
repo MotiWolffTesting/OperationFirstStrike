@@ -1,4 +1,4 @@
-namespace IDFOperationFirstStrike.Core.Models
+namespace OperationFirstStrike.Core.Models
 {
     public class StrikeReport
     {
