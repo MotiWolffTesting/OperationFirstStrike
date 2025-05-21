@@ -1,4 +1,6 @@
-namespace IDFOperationFirstStrike.Core.Interfaces
+using OperationFirstStrike.Core.Models;
+
+namespace OperationFirstStrike.Core.Interfaces
 {
     public interface IStrikeExecutor
     {
