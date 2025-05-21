@@ -1,3 +1,6 @@
+using OperationFirstStrike.Core.Models;
+
+
 namespace OperationFirstStrike
 {
     public interface IStrikeUnit
