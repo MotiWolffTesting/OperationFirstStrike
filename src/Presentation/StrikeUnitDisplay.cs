@@ -4,9 +4,9 @@ namespace OperationFirstStrike.Presentation
 {
     public class StrikeUnitDisplay
     {
-        public void ShowStrikeUnit(List<IStrikeUnit> units)
+        public void ShowStrikeUnits(List<IStrikeUnit> units)
         {
-            Console.WriteLine("\n- Availavle Strike Units -");
+            Console.WriteLine("\n- Available Strike Units -");
             foreach (var unit in units)
             {
                 Console.WriteLine($"{unit.Name} Summary: Ammo - {unit.Ammo}, Fuel - {unit.Fuel}.");

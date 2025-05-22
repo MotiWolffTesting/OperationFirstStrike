@@ -1,4 +1,4 @@
-using IDFOperationFirstStrike.Core.Interfaces;
+using OperationFirstStrike.Core.Interfaces;
 
 namespace OperationFirstStrike.Organizations
 {
