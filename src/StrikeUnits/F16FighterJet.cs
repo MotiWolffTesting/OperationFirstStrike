@@ -10,7 +10,7 @@ namespace OperationFirstStrike
         public int Ammo { get; set; }
         public int Fuel { get; set; }
 
-        public F16FighterJet(string name = "F-16 Fighter Jet", int initialAmmo = 6, int initialFuel = 100)
+        public F16FighterJet(string name = "F-16 Fighter Jet", int initialAmmo = 8, int initialFuel = 100)
         {
             Name = name;
             Ammo = initialAmmo;
@@ -18,7 +18,7 @@ namespace OperationFirstStrike
         }
         public bool CanStrike(string targetType)
         {
-            return targetType == "Building" || targetType == "Vehicle";
+            return targetType == "Building";
         }
 
         public void PerformStrike(Terrorist target, IntelligenceMessage intel)
