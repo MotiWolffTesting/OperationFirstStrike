@@ -4,7 +4,7 @@ namespace OperationFirstStrike.Services
 {
     public class StrikeHistoryWriter
     {
-        private readonly List<StrikeReport> _reports;
+        private readonly List<StrikeReport> _reports = new();
         public void Record(StrikeReport report)
         {
             _reports.Add(report);

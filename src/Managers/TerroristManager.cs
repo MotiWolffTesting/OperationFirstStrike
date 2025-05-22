@@ -5,6 +5,18 @@ namespace OperationFirstStrike.Managers
 {
     public class TerroristManager
     {
+        private readonly List<Terrorist> _terrorists = new();
+
+        public void Add(Terrorist terrorist)
+        {
+            _terrorists.Add(terrorist);
+        }
+
+        public List<Terrorist> GetAll()
+        {
+            return new List<Terrorist>(_terrorists);
+        }
+
         public int GetWeaponScore(Terrorist terrorist)
         {
             return terrorist.Weapons.Sum(w => WeaponScoreRegistry.GetScore(w) * terrorist.Rank);

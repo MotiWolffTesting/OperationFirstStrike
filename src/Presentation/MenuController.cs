@@ -13,6 +13,12 @@ namespace OperationFirstStrike.Presentation
         private readonly IntelligenceDisplay _intelDisplay;
         private readonly TerroristDisplay _terroristDisplay;
         private readonly StrikeUnitDisplay _strikeDisplay;
+        private readonly StrikeHistoryDisplay _strikeHistoryDisplay;
+
+        public IntelligenceDisplay IntelligenceDisplay => _intelDisplay;
+        public TerroristDisplay TerroristDisplay => _terroristDisplay;
+        public StrikeUnitDisplay StrikeUnitDisplay => _strikeDisplay;
+        public StrikeHistoryDisplay StrikeHistoryDisplay => _strikeHistoryDisplay;
 
         public MenuController(
             TerroristManager terroristManager,
@@ -21,7 +27,8 @@ namespace OperationFirstStrike.Presentation
             StrikeHistoryWriter historyWriter,
             IntelligenceDisplay intelDisplay,
             TerroristDisplay terroristDisplay,
-            StrikeUnitDisplay strikeDisplay)
+            StrikeUnitDisplay strikeDisplay,
+            StrikeHistoryDisplay strikeHistoryDisplay)
         {
             _terroristManager = terroristManager;
             _intelManager = intelManager;
@@ -30,6 +37,7 @@ namespace OperationFirstStrike.Presentation
             _intelDisplay = intelDisplay;
             _terroristDisplay = terroristDisplay;
             _strikeDisplay = strikeDisplay;
+            _strikeHistoryDisplay = strikeHistoryDisplay;
         }
 
         public void ShowMenu()
@@ -39,7 +47,8 @@ namespace OperationFirstStrike.Presentation
             Console.WriteLine("2. View Intelligence Reports");
             Console.WriteLine("3. View Strike Units");
             Console.WriteLine("4. View Strike History");
-            Console.WriteLine("5. Exit");
+            Console.WriteLine("5. Conduct Strike");
+            Console.WriteLine("6. Exit");
         }
     }
 }
