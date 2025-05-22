@@ -1,4 +1,5 @@
 using OperationFirstStrike;
+using OperationFirstStrike.Core.Interfaces;
 
 namespace OperationFirstStrike.Core.Models
 {

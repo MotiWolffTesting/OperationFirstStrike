@@ -4,56 +4,87 @@ using OperationFirstStrike.Managers;
 using OperationFirstStrike.Presentation;
 using OperationFirstStrike.Services;
 
-// Set up terrorist data
-var terroristManager = new TerroristManager();
-var yahya = new Terrorist
+class Program
 {
-    Name = "Yahya Sinwar",
-    Rank = 5,
-    Weapons = new List<string> { "ak47", "knife" }
-};
-var mohammed = new Terrorist
-{
-    Name = "Mohammed Deif",
-    Rank = 4,
-    Weapons = new List<string> { "gun", "knife" }
-};
-terroristManager.Add(yahya);
-terroristManager.Add(mohammed);
+    static void Main(string[] args)
+    {
+        try
+        {
 
-// Set up intel
-var intelManager = new IntelligenceManager();
-var intelGenerator = new IntelligenceGenerator();
-intelManager.Add(intelGenerator.Generate(yahya));
-intelManager.Add(intelGenerator.Generate(mohammed));
+            var console = new ConsoleDisplayManager();
+            var dataInitializer = new DataInitializationService();
 
-// Set up strike units
-var strikeUnitManager = new StrikeUnitManager();
-strikeUnitManager.RegisterUnit(new F16FighterJet());
-strikeUnitManager.RegisterUnit(new HermesDrone());
-strikeUnitManager.RegisterUnit(new M109Artillery());
 
-// Set up display components
-var historyWriter = new StrikeHistoryWriter();
-var terroristDisplay = new TerroristDisplay(terroristManager);
-var intelDisplay = new IntelligenceDisplay();
-var strikeUnitDisplay = new StrikeUnitDisplay();
-var strikeHistoryDisplay = new StrikeHistoryDisplay();
+            var terroristManager = new TerroristManager();
+            var intelManager = new IntelligenceManager();
+            var strikeUnitManager = new StrikeUnitManager();
+            var historyWriter = new StrikeHistoryWriter();
 
-// Set up coordinators and controllers
-var coordinator = new StrikeCoordinator(strikeUnitManager, historyWriter);
-var menu = new MenuController(
-    terroristManager,
-    intelManager,
-    coordinator,
-    historyWriter,
-    intelDisplay,
-    terroristDisplay,
-    strikeUnitDisplay,
-    strikeHistoryDisplay
-);
 
-// Run simulation
-var simulation = new SimulationManager(menu, terroristManager, intelManager, coordinator);
-simulation.Initialize();
-simulation.Run();
+            console.ShowMessage("Generating terrorist database...", ConsoleColor.Yellow);
+            var terrorists = dataInitializer.CreateRandomTerrorists(8);
+            foreach (var terrorist in terrorists)
+            {
+                terroristManager.Add(terrorist);
+            }
+
+            console.ShowMessage("Gathering intelligence reports...", ConsoleColor.Yellow);
+            var intelMessages = dataInitializer.GenerateIntelligenceReports(terrorists, 15);
+            foreach (var message in intelMessages)
+            {
+                intelManager.Add(message);
+            }
+
+
+            strikeUnitManager.RegisterUnit(new F16FighterJet());
+            strikeUnitManager.RegisterUnit(new HermesDrone());
+            strikeUnitManager.RegisterUnit(new M109Artillery());
+
+
+            var strikeService = new StrikeCoordinationService(strikeUnitManager);
+            var userService = new UserInteractionService(console);
+            var analysisService = new IntelligenceAnalysisService();
+
+
+            var terroristDisplay = new TerroristDisplay();
+            var intelDisplay = new IntelligenceDisplay();
+            var strikeUnitDisplay = new StrikeUnitDisplay();
+            var strikeHistoryDisplay = new StrikeHistoryDisplay();
+
+
+            var menuController = new MenuController(
+                terroristManager,
+                intelManager,
+                null,
+                historyWriter,
+                intelDisplay,
+                terroristDisplay,
+                strikeUnitDisplay,
+                strikeHistoryDisplay
+            );
+
+
+            var simulation = new SimulationManager(
+                menuController,
+                terroristManager,
+                intelManager,
+                strikeService,
+                userService,
+                analysisService,
+                console,
+                historyWriter
+            );
+
+            simulation.Initialize();
+            simulation.Run();
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Fatal error: {ex.Message}");
+            Console.ResetColor();
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
+        }
+    }
+}

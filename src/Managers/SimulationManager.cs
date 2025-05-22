@@ -1,3 +1,4 @@
+using OperationFirstStrike.Core.Models;
 using OperationFirstStrike.Managers;
 using OperationFirstStrike.Presentation;
 using OperationFirstStrike.Services;
@@ -9,20 +10,30 @@ namespace OperationFirstStrike.Managers
         private readonly MenuController _menu;
         private readonly TerroristManager _terroristManager;
         private readonly IntelligenceManager _intelManager;
-        private readonly StrikeCoordinator _coordinator;
+        private readonly StrikeCoordinationService _strikeService;
+        private readonly UserInteractionService _userService;
+        private readonly IntelligenceAnalysisService _analysisService;
         private readonly ConsoleDisplayManager _console;
+        private readonly StrikeHistoryWriter _historyWriter;
 
         public SimulationManager(
             MenuController menu,
             TerroristManager terroristManager,
             IntelligenceManager intelManager,
-            StrikeCoordinator coordinator)
+            StrikeCoordinationService strikeService,
+            UserInteractionService userService,
+            IntelligenceAnalysisService analysisService,
+            ConsoleDisplayManager console,
+            StrikeHistoryWriter historyWriter)
         {
             _menu = menu;
             _terroristManager = terroristManager;
             _intelManager = intelManager;
-            _coordinator = coordinator;
-            _console = new ConsoleDisplayManager();
+            _strikeService = strikeService;
+            _userService = userService;
+            _analysisService = analysisService;
+            _console = console;
+            _historyWriter = historyWriter;
         }
 
         public void Initialize()
@@ -42,85 +53,116 @@ namespace OperationFirstStrike.Managers
                 Console.WriteLine("\nChoose an option: ");
                 var input = Console.ReadLine()!;
 
-                switch (input)
+                try
                 {
-                    case "1":
-                        _menu.TerroristDisplay.ShowTerroristDetails(_terroristManager.GetAll());
-                        break;
-                    case "2":
-                        _menu.IntelligenceDisplay.ShowIntelligenceSummary(_intelManager.GetAllIntel());
-                        break;
-                    case "3":
-                        _menu.StrikeUnitDisplay.ShowStrikeUnits(_coordinator.GetAllUnits());
-                        break;
-                    case "4":
-                        var history = _coordinator.GetHistory();
-                        _menu.StrikeHistoryDisplay.ShowStrikeHistory(history);
-                        break;
-                    case "5":
-                        ConductStrike();
-                        break;
-                    case "6":
-                        _console.ShowMessage("Exiting simulation. Stay safe, soldier.", ConsoleColor.Red);
-                        running = false;
-                        break;
-                    default:
-                        _console.ShowMessage("Invalid input. Try again.", ConsoleColor.DarkYellow);
-                        break;
+                    switch (input)
+                    {
+                        case "1":
+                            ShowTerroristInformation();
+                            break;
+                        case "2":
+                            ShowIntelligenceAnalysis(); // ✅ NEW: Intelligence analysis
+                            break;
+                        case "3":
+                            _menu.StrikeUnitDisplay.ShowStrikeUnits(_strikeService.GetAllUnits());
+                            break;
+                        case "4":
+                            var history = _historyWriter.GetAllReports();
+                            _menu.StrikeHistoryDisplay.ShowStrikeHistory(history);
+                            break;
+                        case "5":
+                            ShowTargetPrioritization(); // ✅ NEW: Target prioritization
+                            break;
+                        case "6":
+                            ConductStrike();
+                            break;
+                        case "7":
+                            _console.ShowMessage("Exiting simulation. Stay safe, soldier.", ConsoleColor.Red);
+                            running = false;
+                            break;
+                        default:
+                            _console.ShowMessage("Invalid input. Try again.", ConsoleColor.DarkYellow);
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _console.ShowMessage($"An error occurred: {ex.Message}", ConsoleColor.Red);
                 }
             }
         }
-        
-        private void ConductStrike()
+
+        private void ShowTerroristInformation()
         {
-            // Step 1: Get the list of available terrorists
             var terrorists = _terroristManager.GetAll();
-            var aliveTerrorists = terrorists.Where(t => t.IsAlive).ToList();
-            
-            if (!aliveTerrorists.Any())
+            var weaponScores = terrorists.ToDictionary(t => t, t => _terroristManager.GetWeaponScore(t));
+            _menu.TerroristDisplay.ShowTerroristDetails(terrorists, weaponScores);
+        }
+
+        private void ShowIntelligenceAnalysis()
+        {
+            var allIntel = _intelManager.GetAllIntel();
+            _menu.IntelligenceDisplay.ShowIntelligenceSummary(allIntel);
+
+            // Show terrorist with most reports
+            var topTerrorist = _analysisService.GetTerroristWithMostReports(allIntel);
+            if (topTerrorist != null)
             {
-                _console.ShowMessage("No terrorists available to target. All threats have been eliminated.", ConsoleColor.Yellow);
-                return;
+                var reportCount = _analysisService.GetReportCount(allIntel, topTerrorist);
+                _console.ShowMessage($"\nTerrorist with most intelligence reports: {topTerrorist.Name} ({reportCount} reports)", ConsoleColor.Cyan);
             }
-            
-            // Step 2: Display terrorists and ask user to select a target
-            _console.ShowTitle("SELECT TARGET");
-            for (int i = 0; i < aliveTerrorists.Count; i++)
+        }
+
+        private void ShowTargetPrioritization()
+        {
+            var terrorists = _terroristManager.GetAll();
+            var mostDangerous = _terroristManager.GetMostDangerousTerrorist(terrorists);
+
+            if (mostDangerous != null)
             {
-                var terrorist = aliveTerrorists[i];
-                Console.WriteLine($"{i + 1}. {terrorist.Name} (Rank: {terrorist.Rank}, Weapons: {string.Join(", ", terrorist.Weapons)})");
-            }
-            
-            Console.Write("\nSelect target number: ");
-            if (!int.TryParse(Console.ReadLine(), out int targetIndex) || targetIndex < 1 || targetIndex > aliveTerrorists.Count)
-            {
-                _console.ShowMessage("Invalid selection. Operation aborted.", ConsoleColor.Red);
-                return;
-            }
-            
-            // Step 3: Generate intelligence for the selected target
-            var target = aliveTerrorists[targetIndex - 1];
-            var generator = new IntelligenceGenerator();
-            var intel = generator.Generate(target);
-            
-            // Step 4: Execute the strike
-            _console.ShowMessage($"\nTargeting {target.Name} at {intel.Location}...", ConsoleColor.Yellow);
-            Thread.Sleep(1500);
-            
-            var (unit, success) = _coordinator.CoordinateStrike(intel);
-            
-            // Step 5: Report the outcome
-            if (success)
-            {
-                _console.ShowMessage($"STRIKE SUCCESSFUL: {unit.Name} eliminated {target.Name} at {intel.Location}", ConsoleColor.Green);
+                var weaponScore = _terroristManager.GetWeaponScore(mostDangerous);
+                var latestIntel = _analysisService.GetLatestReports(_intelManager.GetAllIntel(), mostDangerous);
+                _menu.TerroristDisplay.ShowMostDangerousTerrorist(mostDangerous, weaponScore, latestIntel);
             }
             else
             {
-                _console.ShowMessage($"STRIKE FAILED: No suitable strike unit available for target at {intel.Location}", ConsoleColor.Red);
+                _console.ShowMessage("No terrorists available for targeting.", ConsoleColor.Yellow);
             }
-            
-            _console.ShowMessage("\nPress Enter to continue...", ConsoleColor.Gray);
-            Console.ReadLine();
+        }
+
+        private void ConductStrike()
+        {
+            // ✅ FIXED: Separated UI from business logic
+            var terrorists = _terroristManager.GetAll();
+            var aliveTerrorists = terrorists.Where(t => t.IsAlive).ToList();
+
+            var selectedTarget = _userService.SelectTarget(aliveTerrorists);
+            if (selectedTarget == null) return;
+
+            // Generate intelligence and execute strike
+            var generator = new IntelligenceGenerator();
+            var intel = generator.Generate(selectedTarget);
+
+            _console.ShowMessage($"\nTargeting {selectedTarget.Name} at {intel.Location}...", ConsoleColor.Yellow);
+            Thread.Sleep(1500);
+
+            var (unit, success) = _strikeService.ExecuteStrike(intel);
+
+            // Record the strike
+            if (success && unit != null)
+            {
+                var report = new StrikeReport
+                {
+                    Unit = unit,
+                    Target = selectedTarget,
+                    Intel = intel,
+                    Success = success,
+                    Timestamp = DateTime.Now
+                };
+                _historyWriter.Record(report);
+            }
+
+            _userService.ShowStrikeResult(unit, selectedTarget, intel, success);
         }
     }
 }

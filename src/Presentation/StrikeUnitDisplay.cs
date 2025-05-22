@@ -1,5 +1,6 @@
 using OperationFirstStrike.Core.Interfaces;
 
+
 namespace OperationFirstStrike.Presentation
 {
     public class StrikeUnitDisplay

@@ -43,12 +43,13 @@ namespace OperationFirstStrike.Presentation
         public void ShowMenu()
         {
             Console.WriteLine("\n[Main Menu]");
-            Console.WriteLine("1. View Terrorist Info");
-            Console.WriteLine("2. View Intelligence Reports");
+            Console.WriteLine("1. View Terrorist Information");
+            Console.WriteLine("2. Intel Analysis");
             Console.WriteLine("3. View Strike Units");
             Console.WriteLine("4. View Strike History");
-            Console.WriteLine("5. Conduct Strike");
-            Console.WriteLine("6. Exit");
+            Console.WriteLine("5. Target Prioritization");
+            Console.WriteLine("6. Conduct Strike");
+            Console.WriteLine("7. Exit");
         }
     }
 }
