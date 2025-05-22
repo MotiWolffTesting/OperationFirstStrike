@@ -19,7 +19,7 @@ namespace OperationFirstStrike
 
         public bool CanStrike(string targetType)
         {
-            return targetType == "OpenArea" || targetType == "Vehicle";
+            return targetType == "Person" || targetType == "Vehicle";
         }
 
         public void PerformStrike(Terrorist target, IntelligenceMessage intel)
