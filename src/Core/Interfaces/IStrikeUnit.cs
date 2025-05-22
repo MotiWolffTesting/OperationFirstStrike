@@ -1,7 +1,7 @@
 using OperationFirstStrike.Core.Models;
 
 
-namespace OperationFirstStrike
+namespace OperationFirstStrike.Core.Interfaces
 {
     public interface IStrikeUnit
     {
