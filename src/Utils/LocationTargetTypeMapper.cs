@@ -8,7 +8,7 @@ namespace OperationFirstStrike.Utils
             {
                 "home" => "Building",
                 "in a car" => "Vehicle",
-                "outside" => "openArea",
+                "outside" => "OpenArea",
                 _ => "Unknown"
 
             };
