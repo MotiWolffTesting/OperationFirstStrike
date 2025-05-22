@@ -14,7 +14,7 @@ namespace OperationFirstStrike
         {
             Name = name;
             Ammo = initialAmmo;
-            Fuel = initialAmmo;
+            Fuel = initialFuel;
         }
         public bool CanStrike(string targetType)
         {
