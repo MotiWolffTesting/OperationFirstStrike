@@ -27,5 +27,10 @@ namespace OperationFirstStrike.Services
 
             return (selectedUnit, true);
         }
+
+        internal List<IStrikeUnit> GetAllUnits()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

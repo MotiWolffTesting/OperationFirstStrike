@@ -12,6 +12,7 @@ namespace OperationFirstStrike
         {
             DateOfFormation = formationDate;
             CurrentCommander = commander;
+            Terrorists = new List<Terrorist>();
         }
 
         public void AddTerrorist(Terrorist terrorist)

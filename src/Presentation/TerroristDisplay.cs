@@ -16,13 +16,14 @@ namespace OperationFirstStrike.Presentation
             }
         }
 
-        public void ShowMostDangeroursTerrorist(Terrorist terrorist, int weaponScore, List<IntelligenceMessage> latestIntel)
+        public void ShowMostDangerousTerrorist(Terrorist terrorist, int weaponScore, List<IntelligenceMessage> latestIntel)
         {
-            Console.WriteLine("\n=== Most Dangerous Terrorist ===");
+            Console.WriteLine("\n=== MOST DANGEROUS TERRORIST ===");
             Console.WriteLine($"Name: {terrorist.Name}");
             Console.WriteLine($"Rank: {terrorist.Rank}");
             Console.WriteLine($"Quality Score: {weaponScore}");
             Console.WriteLine($"Weapons: {string.Join(", ", terrorist.Weapons)}");
+            Console.WriteLine($"Status: {(terrorist.IsAlive ? "Alive" : "Eliminated")}");
 
             if (latestIntel.Any())
             {
