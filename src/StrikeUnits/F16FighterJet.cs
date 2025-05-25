@@ -9,6 +9,11 @@ namespace OperationFirstStrike
         public string Name { get; set; }
         public int Ammo { get; set; }
         public int Fuel { get; set; }
+        public int MaxFuel { get; } = 100;
+        public int FuelThreshold { get; } = 30;
+        public DateTime LastStrikeTime { get; set; } = DateTime.MinValue;
+        public TimeSpan CooldownDuration { get; } = TimeSpan.FromMinutes(15); // 15 min cooldown
+        public bool IsOnCooldown { get; private set; }
 
         public F16FighterJet(string name = "F-16 Fighter Jet", int initialAmmo = 8, int initialFuel = 100)
         {
@@ -16,20 +21,54 @@ namespace OperationFirstStrike
             Ammo = initialAmmo;
             Fuel = initialFuel;
         }
-        public bool CanStrike(string targetType)
+
+        public bool CanStrike(string targetType) => targetType == "Building";
+
+        public void Refuel()
         {
-            return targetType == "Building";
+            Fuel = MaxFuel;
         }
 
-        public void PerformStrike(Terrorist target, IntelligenceMessage intel)
+        public StrikeResult PerformStrike(Terrorist target, IntelligenceMessage intel)
         {
-            if (Ammo > 0 && Fuel >= 20)
+            var result = new StrikeResult();
+            var random = new Random();
+
+            if (Ammo > 0 && Fuel >= 25 && !IsOnCooldown)
             {
-                target.IsAlive = false;
+                // Consume resources
                 Ammo--;
-                Fuel -= 20;
-            }
-        }
+                Fuel -= 25;
+                result.FuelConsumed = 25;
+                result.AmmoUsed = 1;
+                LastStrikeTime = DateTime.Now;
 
+                // Determine success based on intel confidence
+                bool strikeHits = random.Next(1, 101) <= intel.ConfidenceScore;
+
+                if (strikeHits)
+                {
+                    target.IsAlive = false;
+                    result.Success = true;
+                    result.TargetEliminated = true;
+
+                    // Collateral damage chance (lower for precision strikes)
+                    result.CollateralDamage = random.Next(1, 101) <= 15; // 15% chance
+
+                    // Post-strike intel
+                    if (random.Next(1, 101) <= 30) // 30% chance
+                    {
+                        result.PostStrikeIntel = "Secondary targets identified in blast radius";
+                    }
+                }
+                else
+                {
+                    result.Success = false;
+                    result.CollateralDamage = random.Next(1, 101) <= 25; // Higher chance if missed
+                }
+            }
+
+            return result;
+        }
     }
 }
