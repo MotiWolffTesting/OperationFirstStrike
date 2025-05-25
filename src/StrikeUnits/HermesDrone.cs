@@ -10,6 +10,14 @@ namespace OperationFirstStrike
         public int Ammo { get; set; }
         public int Fuel { get; set; }
 
+        public int MaxFuel => throw new NotImplementedException();
+
+        public int FuelThreshold => throw new NotImplementedException();
+
+        public DateTime LastStrikeTime { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public TimeSpan CooldownDuration => throw new NotImplementedException();
+
         public HermesDrone(string name =  "Hermes Drone", int initialAmmo = 4, int initialFuel = 80)
         {
             Name = name;
@@ -30,6 +38,16 @@ namespace OperationFirstStrike
                 Ammo--;
                 Fuel -= 15;
             }
+        }
+
+        public void Refuel()
+        {
+            throw new NotImplementedException();
+        }
+
+        StrikeResult IStrikeUnit.PerformStrike(Terrorist target, IntelligenceMessage intel)
+        {
+            throw new NotImplementedException();
         }
     }
 }
