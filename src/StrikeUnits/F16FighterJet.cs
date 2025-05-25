@@ -1,8 +1,7 @@
 using OperationFirstStrike.Core.Interfaces;
 using OperationFirstStrike.Core.Models;
-using OperationFirstStrike.Utils;
 
-namespace OperationFirstStrike
+namespace OperationFirstStrike.StrikeUnits
 {
     public class F16FighterJet : IStrikeUnit
     {
@@ -12,14 +11,14 @@ namespace OperationFirstStrike
         public int MaxFuel { get; } = 100;
         public int FuelThreshold { get; } = 30;
         public DateTime LastStrikeTime { get; set; } = DateTime.MinValue;
-        public TimeSpan CooldownDuration { get; } = TimeSpan.FromMinutes(15); // 15 min cooldown
+        public TimeSpan CooldownDuration { get; } = TimeSpan.FromMinutes(15);
         public bool IsOnCooldown { get; private set; }
 
         public F16FighterJet(string name = "F-16 Fighter Jet", int initialAmmo = 8, int initialFuel = 100)
         {
             Name = name;
             Ammo = initialAmmo;
-            Fuel = initialFuel;
+            Fuel = initialFuel; // ✅ FIXED
         }
 
         public bool CanStrike(string targetType) => targetType == "Building";
@@ -29,7 +28,15 @@ namespace OperationFirstStrike
             Fuel = MaxFuel;
         }
 
-        public StrikeResult PerformStrike(Terrorist target, IntelligenceMessage intel)
+        // OLD METHOD - for backwards compatibility
+        public void PerformStrike(Terrorist target, IntelligenceMessage intel)
+        {
+            var result = PerformEnhancedStrike(target, intel);
+            // Old method just does the basic strike without returning details
+        }
+
+        // NEW METHOD - Enhanced strike with detailed results
+        public StrikeResult PerformEnhancedStrike(Terrorist target, IntelligenceMessage intel)
         {
             var result = new StrikeResult();
             var random = new Random();
