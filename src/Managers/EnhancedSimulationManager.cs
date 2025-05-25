@@ -395,7 +395,25 @@ namespace OperationFirstStrike.Managers
             Console.WriteLine($"\n🚀 Executing strike with {unit.Name}...");
             Thread.Sleep(2000);
 
-            var result = unit.PerformStrike(target, intel);
+            // Use enhanced strike if available, fallback to old method
+            StrikeResult result;
+            try
+            {
+                result = unit.PerformEnhancedStrike(target, intel);
+            }
+            catch (Exception)
+            {
+                // Fallback to old method
+                unit.PerformStrike(target, intel);
+                result = new StrikeResult
+                {
+                    Success = !target.IsAlive,
+                    TargetEliminated = !target.IsAlive,
+                    AmmoUsed = 1,
+                    FuelConsumed = 20
+                };
+            }
+
             var report = new StrikeReport
             {
                 Unit = unit,
@@ -414,14 +432,10 @@ namespace OperationFirstStrike.Managers
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"✅ STRIKE SUCCESSFUL!");
                 Console.ResetColor();
-                
+
                 if (result.TargetEliminated)
                 {
                     Console.WriteLine($"🎯 Target {target.Name} eliminated");
-                }
-                else
-                {
-                    Console.WriteLine($"🎯 Target {target.Name} captured");
                 }
             }
             else
@@ -432,7 +446,7 @@ namespace OperationFirstStrike.Managers
             }
 
             Console.WriteLine($"Resources used: {result.AmmoUsed} ammo, {result.FuelConsumed} fuel");
-            
+
             if (result.CollateralDamage)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -447,7 +461,6 @@ namespace OperationFirstStrike.Managers
                 Console.ResetColor();
             }
 
-            // Log the action
             Console.WriteLine($"\n📝 Strike logged by {_currentOfficer?.Rank} {_currentOfficer?.Name}");
         }
 

@@ -1,53 +1,73 @@
 using OperationFirstStrike.Core.Interfaces;
 using OperationFirstStrike.Core.Models;
-using OperationFirstStrike.Utils;
 
-namespace OperationFirstStrike
+namespace OperationFirstStrike.StrikeUnits
 {
     public class M109Artillery : IStrikeUnit
     {
         public string Name { get; set; }
         public int Ammo { get; set; }
         public int Fuel { get; set; }
+        public int MaxFuel { get; } = 50;
+        public int FuelThreshold { get; } = 15;
+        public DateTime LastStrikeTime { get; set; } = DateTime.MinValue;
+        public TimeSpan CooldownDuration { get; } = TimeSpan.FromMinutes(20);
+        public bool IsOnCooldown { get; private set; }
 
-        public int MaxFuel => throw new NotImplementedException();
-
-        public int FuelThreshold => throw new NotImplementedException();
-
-        public DateTime LastStrikeTime { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public TimeSpan CooldownDuration => throw new NotImplementedException();
-
-        public M109Artillery(string name = "M109 Artillery", int initialAmmo = 10, int initialFuel = 50)
+        public M109Artillery(string name = "M109 Artillery", int initialAmmo = 40, int initialFuel = 50)
         {
             Name = name;
             Ammo = initialAmmo;
             Fuel = initialFuel;
         }
 
-        public bool CanStrike(string targetType)
+        public bool CanStrike(string targetType) => targetType == "OpenArea";
+
+        public void Refuel()
         {
-            return targetType == "OpenArea";
+            Fuel = MaxFuel;
         }
 
         public void PerformStrike(Terrorist target, IntelligenceMessage intel)
         {
-            if (Ammo > 0 && Fuel >= 10)
+            var result = PerformEnhancedStrike(target, intel);
+        }
+
+        public StrikeResult PerformEnhancedStrike(Terrorist target, IntelligenceMessage intel)
+        {
+            var result = new StrikeResult();
+            var random = new Random();
+
+            if (Ammo > 0 && Fuel >= 10 && !IsOnCooldown)
             {
-                target.IsAlive = false;
                 Ammo--;
                 Fuel -= 10;
+                result.FuelConsumed = 10;
+                result.AmmoUsed = 1;
+                LastStrikeTime = DateTime.Now;
+
+                bool strikeHits = random.Next(1, 101) <= intel.ConfidenceScore;
+
+                if (strikeHits)
+                {
+                    target.IsAlive = false;
+                    result.Success = true;
+                    result.TargetEliminated = true;
+                    result.CollateralDamage = random.Next(1, 101) <= 30; // 30% chance (artillery)
+
+                    if (random.Next(1, 101) <= 20)
+                    {
+                        result.PostStrikeIntel = "Artillery strike revealed underground tunnels";
+                    }
+                }
+                else
+                {
+                    result.Success = false;
+                    result.CollateralDamage = random.Next(1, 101) <= 40; // Higher for missed artillery
+                }
             }
-        }
 
-        public void Refuel()
-        {
-            throw new NotImplementedException();
-        }
-
-        StrikeResult IStrikeUnit.PerformStrike(Terrorist target, IntelligenceMessage intel)
-        {
-            throw new NotImplementedException();
+            return result;
         }
     }
 }
