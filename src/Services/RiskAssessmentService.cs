@@ -3,6 +3,7 @@ using OperationFirstStrike.Core.Interfaces;
 
 namespace OperationFirstStrike.Services
 {
+    // Represents the level of risk associated with a strike operation
     public enum RiskLevel
     {
         Low,
@@ -11,16 +12,24 @@ namespace OperationFirstStrike.Services
         Critical
     }
 
+    // Contains the results of a risk assessment for a strike operation
     public class RiskAssessment
     {
+        // The overall risk level of the operation
         public RiskLevel Level { get; set; }
+        // Numerical risk score (0-100)
         public int Score { get; set; }
+        // Explanation of the risk assessment
         public string Reasoning { get; set; } = string.Empty;
+        // List of factors contributing to the risk score
         public List<string> Factors { get; set; } = new();
     }
 
+    // Evaluates the risk associated with potential strike operations
     public class RiskAssessmentService
     {
+        // Calculates the risk assessment for a strike operation
+        // Takes into account target danger, location, intelligence confidence, and unit readiness
         public RiskAssessment CalculateRisk(Terrorist target, IntelligenceMessage intel, IStrikeUnit unit, int terroristDangerScore)
         {
             var assessment = new RiskAssessment();
@@ -35,9 +44,9 @@ namespace OperationFirstStrike.Services
             // Location exposure (0-20 points)
             int locationRisk = intel.Location switch
             {
-                "home" => 5,      
-                "outside" => 15, 
-                "in a car" => 10, 
+                "home" => 5,      // Lower risk for stationary targets
+                "outside" => 15,  // Higher risk for mobile targets
+                "in a car" => 10, // Medium risk for moving vehicles
                 _ => 10
             };
             riskScore += locationRisk;
@@ -57,7 +66,8 @@ namespace OperationFirstStrike.Services
 
             assessment.Score = riskScore;
             assessment.Factors = factors;
-            
+
+            // Determine risk level based on total score
             assessment.Level = riskScore switch
             {
                 <= 25 => RiskLevel.Low,
@@ -70,5 +80,4 @@ namespace OperationFirstStrike.Services
             return assessment;
         }
     }
-
 }

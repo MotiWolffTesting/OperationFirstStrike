@@ -6,15 +6,18 @@ using OperationFirstStrike.Services;
 using OperationFirstStrike.StrikeUnits;
 using static OperationFirstStrike.Core.Models.IntelligenceMessage;
 
+// Main program class that orchestrates the Operation First Strike simulation
 class Program
 {
+    // Entry point of the application
+    // Initializes and runs the enhanced military operation simulation
     static void Main(string[] args)
     {
         try
         {
             Console.WriteLine("🎯 Initializing IDF Operation First Strike - Enhanced Edition...");
 
-            // Initialize core managers
+            // Initialize core managers for terrorist tracking, intelligence, and strike operations
             var terroristManager = new TerroristManager();
             var intelManager = new IntelligenceManager();
             var strikeUnitManager = new StrikeUnitManager();
@@ -37,7 +40,6 @@ class Program
 
             enhancedSimulation.Initialize();
             enhancedSimulation.Run();
-
         }
         catch (Exception ex)
         {
@@ -50,6 +52,8 @@ class Program
         }
     }
 
+    // Initializes the terrorist database with realistic data
+    // Creates a list of high-value targets with varying ranks and weapons
     private static void InitializeTerroristDatabase(TerroristManager terroristManager)
     {
         Console.WriteLine("📝 Creating terrorist database...");
@@ -126,6 +130,8 @@ class Program
         Console.WriteLine($"✅ {terrorists.Count} terrorists added to database");
     }
 
+    // Generates intelligence reports for the terrorist database
+    // Creates varying numbers of reports based on terrorist rank and location
     private static void GenerateIntelligenceReports(TerroristManager terroristManager, IntelligenceManager intelManager)
     {
         Console.WriteLine("📡 Generating intelligence reports...");
@@ -186,6 +192,8 @@ class Program
         Console.WriteLine($"   🎯 {reliableReports} reliable (high confidence)");
     }
 
+    // Initializes the strike units with various capabilities
+    // Deploys air force assets, drones, artillery, and ground forces
     private static void InitializeStrikeUnits(StrikeUnitManager strikeUnitManager)
     {
         Console.WriteLine("⚔️ Deploying strike units...");
@@ -216,6 +224,8 @@ class Program
         }
     }
 
+    // Gets a formatted string describing a unit's capabilities
+    // Includes target types, ammo count, and fuel level
     private static string GetUnitCapabilities(IStrikeUnit unit)
     {
         var capabilities = new List<string>();

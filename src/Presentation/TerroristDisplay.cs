@@ -3,8 +3,11 @@ using OperationFirstStrike.Managers;
 
 namespace OperationFirstStrike.Presentation
 {
+    // Handles the display of terrorist information in the console
     public class TerroristDisplay
     {
+        // Displays detailed information about all terrorists
+        // Shows name, rank, weapons, threat score, and current status
         public void ShowTerroristDetails(List<Terrorist> terrorists, Dictionary<Terrorist, int> weaponScore)
         {
             Console.WriteLine("\n- Terrorists - ");
@@ -16,6 +19,8 @@ namespace OperationFirstStrike.Presentation
             }
         }
 
+        // Displays detailed information about the most dangerous terrorist
+        // Shows comprehensive details including latest intelligence
         public void ShowMostDangerousTerrorist(Terrorist terrorist, int weaponScore, List<IntelligenceMessage> latestIntel)
         {
             Console.WriteLine("\n=== MOST DANGEROUS TERRORIST ===");

@@ -7,24 +7,29 @@ using static OperationFirstStrike.Core.Models.IntelligenceMessage;
 
 namespace OperationFirstStrike.Managers
 {
+    // Enhanced version of the simulation manager with advanced features like time management,
+    // risk assessment, and terrorist movement tracking
     public class EnhancedSimulationManager
     {
+        // Core managers for basic functionality
         private readonly TerroristManager _terroristManager;
         private readonly IntelligenceManager _intelManager;
         private readonly StrikeUnitManager _strikeUnitManager;
         private readonly ConsoleDisplayManager _console;
-        
-        // Enhanced services
+
+        // Enhanced services for advanced features
         private readonly RiskAssessmentService _riskService;
         private readonly StrikeRecommendationService _recommendationService;
         private readonly SimulationTimeService _timeService;
         private readonly TerroristMovementService _movementService;
         private readonly AuthenticationService _authService;
         private readonly AnalyticsService _analyticsService;
-        
+
+        // Current user session data
         private Officer? _currentOfficer;
         private readonly List<StrikeReport> _strikeHistory = new();
 
+        // Initializes the enhanced simulation with required dependencies
         public EnhancedSimulationManager(
             TerroristManager terroristManager,
             IntelligenceManager intelManager,
@@ -34,19 +39,21 @@ namespace OperationFirstStrike.Managers
             _intelManager = intelManager;
             _strikeUnitManager = strikeUnitManager;
             _console = new ConsoleDisplayManager();
-            
+
+            // Initialize enhanced services
             _riskService = new RiskAssessmentService();
             _recommendationService = new StrikeRecommendationService();
             _timeService = new SimulationTimeService();
             _movementService = new TerroristMovementService();
             _authService = new AuthenticationService();
             _analyticsService = new AnalyticsService();
-            
-            // Wire up events
+
+            // Wire up event handlers for time advancement and terrorist movement
             _timeService.OnTimeAdvanced += OnTimeAdvanced;
             _movementService.OnTerroristMoved += OnTerroristMoved;
         }
 
+        // Sets up the initial simulation environment and authenticates the user
         public void Initialize()
         {
             // Authenticate user first
@@ -66,6 +73,7 @@ namespace OperationFirstStrike.Managers
             Thread.Sleep(1000);
         }
 
+        // Main simulation loop that handles user interaction and menu navigation
         public void Run()
         {
             if (_currentOfficer == null) return;
@@ -116,6 +124,7 @@ namespace OperationFirstStrike.Managers
             }
         }
 
+        // Displays the enhanced command center menu with current status
         private void ShowEnhancedMenu()
         {
             Console.Clear();
@@ -148,6 +157,7 @@ namespace OperationFirstStrike.Managers
             Console.WriteLine("  0. Exit Mission");
         }
 
+        // Displays detailed information about all known terrorists
         private void ShowTerroristInformation()
         {
             _console.ShowTitle("🎯 TERRORIST DATABASE");
@@ -178,6 +188,7 @@ namespace OperationFirstStrike.Managers
             }
         }
 
+        // Shows detailed analysis of intelligence data with reliability metrics
         private void ShowIntelligenceAnalysis()
         {
             _console.ShowTitle("📡 INTELLIGENCE ANALYSIS");
@@ -217,6 +228,7 @@ namespace OperationFirstStrike.Managers
             }
         }
 
+        // Shows current status of all strike units including fuel, ammo, and cooldown states
         private void ShowStrikeUnitsStatus()
         {
             _console.ShowTitle("⚔️ STRIKE UNITS STATUS");
