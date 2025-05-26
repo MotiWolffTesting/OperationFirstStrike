@@ -4,15 +4,20 @@ using OperationFirstStrike.Presentation;
 
 namespace OperationFirstStrike.Services
 {
+    // Handles user interaction and input/output operations for the application
     public class UserInteractionService
     {
+        // Manages console display and formatting
         private readonly ConsoleDisplayManager _console;
 
+        // Initializes the service with required dependencies
         public UserInteractionService(ConsoleDisplayManager console)
         {
             _console = console;
         }
 
+        // Prompts the user to select a target from a list of available terrorists
+        // Returns the selected terrorist or null if selection is invalid
         public Terrorist? SelectTarget(List<Terrorist> availableTargets)
         {
             if (!availableTargets.Any())
@@ -38,6 +43,8 @@ namespace OperationFirstStrike.Services
             return availableTargets[targetIndex - 1];
         }
 
+        // Displays the result of a strike operation to the user
+        // Shows success/failure message with relevant details
         public void ShowStrikeResult(IStrikeUnit? unit, Terrorist target, IntelligenceMessage intel, bool success)
         {
             if (success && unit != null)

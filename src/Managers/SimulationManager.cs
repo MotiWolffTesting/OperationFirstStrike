@@ -5,17 +5,24 @@ using OperationFirstStrike.Services;
 
 namespace OperationFirstStrike.Managers
 {
+    // Main simulation controller that orchestrates the entire operation
     public class SimulationManager
     {
+        // UI and display components
         private readonly MenuController _menu;
+        private readonly ConsoleDisplayManager _console;
+
+        // Core managers for different aspects of the system
         private readonly TerroristManager _terroristManager;
         private readonly IntelligenceManager _intelManager;
+
+        // Services for business logic
         private readonly StrikeCoordinationService _strikeService;
         private readonly UserInteractionService _userService;
         private readonly IntelligenceAnalysisService _analysisService;
-        private readonly ConsoleDisplayManager _console;
         private readonly StrikeHistoryWriter _historyWriter;
 
+        // Initializes the simulation with all required dependencies
         public SimulationManager(
             MenuController menu,
             TerroristManager terroristManager,
@@ -36,6 +43,7 @@ namespace OperationFirstStrike.Managers
             _historyWriter = historyWriter;
         }
 
+        // Sets up the initial simulation environment
         public void Initialize()
         {
             _console.ShowTitle("IDF OPERATION – FIRST STRIKE");
@@ -43,6 +51,7 @@ namespace OperationFirstStrike.Managers
             Thread.Sleep(1000);
         }
 
+        // Main simulation loop that handles user interaction and menu navigation
         public void Run()
         {
             bool running = true;
@@ -61,7 +70,7 @@ namespace OperationFirstStrike.Managers
                             ShowTerroristInformation();
                             break;
                         case "2":
-                            ShowIntelligenceAnalysis(); // ✅ NEW: Intelligence analysis
+                            ShowIntelligenceAnalysis();
                             break;
                         case "3":
                             _menu.StrikeUnitDisplay.ShowStrikeUnits(_strikeService.GetAllUnits());
@@ -71,7 +80,7 @@ namespace OperationFirstStrike.Managers
                             _menu.StrikeHistoryDisplay.ShowStrikeHistory(history);
                             break;
                         case "5":
-                            ShowTargetPrioritization(); // ✅ NEW: Target prioritization
+                            ShowTargetPrioritization();
                             break;
                         case "6":
                             ConductStrike();
@@ -92,6 +101,7 @@ namespace OperationFirstStrike.Managers
             }
         }
 
+        // Displays information about all known terrorists and their threat levels
         private void ShowTerroristInformation()
         {
             var terrorists = _terroristManager.GetAll();
@@ -99,6 +109,7 @@ namespace OperationFirstStrike.Managers
             _menu.TerroristDisplay.ShowTerroristDetails(terrorists, weaponScores);
         }
 
+        // Shows analysis of intelligence data and identifies patterns
         private void ShowIntelligenceAnalysis()
         {
             var allIntel = _intelManager.GetAllIntel();
@@ -113,6 +124,7 @@ namespace OperationFirstStrike.Managers
             }
         }
 
+        // Displays prioritized targets based on threat level and intelligence
         private void ShowTargetPrioritization()
         {
             var terrorists = _terroristManager.GetAll();
@@ -130,9 +142,9 @@ namespace OperationFirstStrike.Managers
             }
         }
 
+        // Handles the strike operation process from target selection to execution
         private void ConductStrike()
         {
-            // ✅ FIXED: Separated UI from business logic
             var terrorists = _terroristManager.GetAll();
             var aliveTerrorists = terrorists.Where(t => t.IsAlive).ToList();
 

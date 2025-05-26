@@ -3,17 +3,27 @@ using OperationFirstStrike.Core.Models;
 
 namespace OperationFirstStrike.StrikeUnits
 {
+    // Represents a ground-based special forces unit capable of both capture and elimination operations
     public class GroundUnit : IStrikeUnit
     {
+        // Name of the ground unit (e.g., "Sayeret Matkal", "Shayetet 13")
         public string Name { get; set; }
+        // Current ammunition count
         public int Ammo { get; set; }
+        // Current fuel level
         public int Fuel { get; set; }
+        // Maximum fuel capacity
         public int MaxFuel { get; } = 50;
+        // Fuel level at which refueling is recommended
         public int FuelThreshold { get; } = 10;
+        // Timestamp of the last strike operation
         public DateTime LastStrikeTime { get; set; } = DateTime.MinValue;
+        // Time required between operations
         public TimeSpan CooldownDuration { get; } = TimeSpan.FromMinutes(30); // Longer cooldown
+        // Whether the unit is currently in cooldown period
         public bool IsOnCooldown { get; private set; }
 
+        // Initializes a new ground unit with specified name and initial resources
         public GroundUnit(string name = "Special Forces Unit", int initialAmmo = 3, int initialFuel = 50)
         {
             Name = name;
@@ -21,22 +31,26 @@ namespace OperationFirstStrike.StrikeUnits
             Fuel = initialFuel;
         }
 
+        // Determines if the unit can strike a specific target type
+        // Ground units can strike buildings and vehicles
         public bool CanStrike(string targetType) => targetType == "Building" || targetType == "Vehicle";
 
+        // Refuels the unit and resupplies ammunition
         public void Refuel()
         {
             Fuel = MaxFuel;
             Ammo += 2; // Resupply ammo during "refuel"
         }
 
-        // ✅ FIXED: OLD METHOD - Returns void (for backwards compatibility)
+        // Legacy method for performing strikes (maintained for compatibility)
         public void PerformStrike(Terrorist target, IntelligenceMessage intel)
         {
             var result = PerformEnhancedStrike(target, intel);
             // Old method just does the strike without returning details
         }
 
-        // ✅ FIXED: NEW METHOD - Enhanced strike with detailed results
+        // Enhanced strike operation with detailed results
+        // Includes capture attempts and collateral damage assessment
         public StrikeResult PerformEnhancedStrike(Terrorist target, IntelligenceMessage intel)
         {
             var result = new StrikeResult();
